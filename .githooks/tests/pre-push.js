@@ -57,7 +57,7 @@ test('ignores files which are already being tracked', async t => {
     let thrownError = null
 
     await exec(`git add ${newFileName}`)
-    console.log('COMMITING .bigfile')
+    console.log('COMMITING .bin')
     const commit = await exec(`git commit -m "Test commit: .bin File added"`)
         //test hook
     try {
@@ -79,38 +79,33 @@ test('ignores files which are already being tracked', async t => {
     thrownError ? t.fail() : t.pass('.bin does not cause an error')
 })
 
+test('ignores renames', async t => {
+    // write a .bin
+    const newFileName = path.resolve(__dirname, 'test-2.bin')
+    const oldFileName = path.resolve(__dirname, 'test.bin')
+    fs.renameSync(oldFileName, newFileName)
+        // add and commit
+    let thrownError = null
 
-// test('ignores tracked files', async t => {
-//     // write a .bin
-//     const newFileName = path.join(__dirname, 'example.bin')
-//     try {
-//         fs.writeFileSync(newFileName, 'I AM A BIG FILE')
-//     } catch (e) {
-//         //ignore any file already exsists
-//     }
-
-//     // add and commit
-//     let commit = null
-//     let thrownError = null
-//     try {
-//         await exec(`git add ${newFileName}`)
-//         commit = (await exec(`git commit -m "Test commit: .bin file added"`)).stdout
-//             //test hook
-//         await exec('npm run pre-push --silent')
-//         console.log('ppm', prePushMessage)
-//     } catch (e) {
-//         console.log(e)
-//         thrownError = e
-//     }
-//     if (commit) {
-//         //roll back the commit
-//         await exec(`git reset HEAD^`)
-//     }
-//     try {
-//         //delete the file
-//         fs.unlinkSync(newFileName)
-//     } catch (e) {
-//         //ignore this error
-//     }
-//     thrownError ? t.fail() : t.pass('Error not thrown')
-// })
+    await exec(`git add ${newFileName}`)
+    console.log('COMMITING filename change')
+    const commit = await exec(`git commit -m "Test commit: .bin File rename"`)
+        //test hook
+    try {
+        await exec('npm run pre-push --silent')
+    } catch (e) {
+        thrownError = e
+    }
+    if (commit.stdout) {
+        //roll back the commit
+        console.log('ROLLING BACK COMMIT')
+        await exec('git reset HEAD~1')
+    }
+    try {
+        //swap name back
+        fs.renameSync(newFileName, oldFileName)
+    } catch (e) {
+        //ignore this error
+    }
+    thrownError ? t.fail() : t.pass('.bin does not cause an error')
+})

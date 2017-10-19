@@ -1,0 +1,26 @@
+{
+    "name": "documentation",
+    "version": "1.0.0",
+    "main": "index.js",
+    "repository": "https://github.com/j-medland/mostly-lfs.git",
+    "author": "John Medland <john.medland@manchester.ac.uk>",
+    "license": "MIT",
+    "private": true,
+    "dependencies": {
+        "chalk": "^2.2.0",
+        "husky": "^0.15.0-beta.10",
+        "minimatch": "^3.0.4"
+    },
+    "scripts": {
+        "pre-push": "node ./.githooks/pre-push.js",
+        "test": "node ./.githooks/tests/tests.js"
+    },
+    "husky": {
+        "hooks": {
+            "pre-push": "npm run pre-push --silent"
+        }
+    },
+    "devDependencies": {
+        "tape-async": "^2.3.0"
+    }
+}

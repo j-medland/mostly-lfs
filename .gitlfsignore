@@ -1,0 +1,8 @@
+# node files
+package.json
+yarn.lock
+
+# typical text files anywhere
+**/*.md
+**/*.txt
+**/*.js

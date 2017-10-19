@@ -12,22 +12,6 @@ It uses husky to offer a node based solution.
 * Make sure you have [Node ^8.0](https://nodejs.org/en/download/current/) installed
 * Optionally install yarn with `npm install -g yarn`
 * Fork this repo or take a shallow clone into a differently named folder (if not using github)
-    ```bash
-    # shallow clone the repo
-    git clone https://github.com/j-medland/mostly-lfs --depth 1 my-project-name
-
-    # cd into the new folder
-    cd my-project-name
-
-    # remove git
-     rm -rf .git
-
-    # re-initialize git
-    git init
-
-    # setup your remote
-    git remote add origin <some-remote-repo>
-    ```
 * Run `npm install` to install the project dependencies
 * Push your commits with gay abandon (you will need to `--set-upstream` on the first one)
 

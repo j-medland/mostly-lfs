@@ -33,21 +33,18 @@ test('catches new files', async t => {
     if (commit.stdout) {
         //roll back the commit
         console.log('ROLLING BACK COMMIT')
-        await exec(`git reset HEAD^`)
+        await exec('git reset HEAD~1')
     }
     try {
         //delete the file
-
         fs.unlinkSync(newFileName)
     } catch (e) {
         //ignore this error
     }
-    await sleep(200)
-    thrownError ? t.pass('Error thrown') : t.fail()
+    thrownError ? t.pass('.bigfile found') : t.fail()
 })
 
-
-test('ignores tracked files', async t => {
+test('ignores files which are already being tracked', async t => {
     // write a .bin
     const newFileName = path.join(__dirname, 'example.bin')
     try {
@@ -57,21 +54,21 @@ test('ignores tracked files', async t => {
     }
 
     // add and commit
-    let commit = null
     let thrownError = null
+
+    await exec(`git add ${newFileName}`)
+    console.log('COMMITING .bigfile')
+    const commit = await exec(`git commit -m "Test commit: .bin File added"`)
+        //test hook
     try {
-        await exec(`git add ${newFileName}`)
-        commit = (await exec(`git commit -m "Test commit: .bin file added"`)).stdout
-            //test hook
         await exec('npm run pre-push --silent')
-        console.log('ppm', prePushMessage)
     } catch (e) {
-        console.log(e)
         thrownError = e
     }
-    if (commit) {
+    if (commit.stdout) {
         //roll back the commit
-        await exec(`git reset HEAD^`)
+        console.log('ROLLING BACK COMMIT')
+        await exec('git reset HEAD~1')
     }
     try {
         //delete the file
@@ -79,5 +76,41 @@ test('ignores tracked files', async t => {
     } catch (e) {
         //ignore this error
     }
-    thrownError ? t.fail() : t.pass('Error not thrown')
+    thrownError ? t.fail() : t.pass('.bin does not cause an error')
 })
+
+
+// test('ignores tracked files', async t => {
+//     // write a .bin
+//     const newFileName = path.join(__dirname, 'example.bin')
+//     try {
+//         fs.writeFileSync(newFileName, 'I AM A BIG FILE')
+//     } catch (e) {
+//         //ignore any file already exsists
+//     }
+
+//     // add and commit
+//     let commit = null
+//     let thrownError = null
+//     try {
+//         await exec(`git add ${newFileName}`)
+//         commit = (await exec(`git commit -m "Test commit: .bin file added"`)).stdout
+//             //test hook
+//         await exec('npm run pre-push --silent')
+//         console.log('ppm', prePushMessage)
+//     } catch (e) {
+//         console.log(e)
+//         thrownError = e
+//     }
+//     if (commit) {
+//         //roll back the commit
+//         await exec(`git reset HEAD^`)
+//     }
+//     try {
+//         //delete the file
+//         fs.unlinkSync(newFileName)
+//     } catch (e) {
+//         //ignore this error
+//     }
+//     thrownError ? t.fail() : t.pass('Error not thrown')
+// })
